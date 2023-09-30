@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No WiFi Dino Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f7f7f7;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #dino {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 44px;
+            height: 47px;
+            background-image: url('dino.png'); /* Replace with your dino image */
+            background-size: cover;
+        }
+
+        .obstacle {
+            position: absolute;
+            bottom: 0;
+            width: 24px;
+            height: 24px;
+            background-color: #000;
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="dino"></div>
+        <div id="score">0</div>
+    </div>
+
+    <script>
+        const dino = document.getElementById('dino');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+        let isJumping = false;
+
+        function createObstacle() {
+            const obstacle = document.createElement('div');
+            obstacle.className = 'obstacle';
+            obstacle.style.left = '100%';
+            document.getElementById('game-container').appendChild(obstacle);
+
+            const obstacleInterval = setInterval(() => {
+                if (obstacle.getBoundingClientRect().left < 0) {
+                    clearInterval(obstacleInterval);
+                    obstacle.remove();
+                } else {
+                    obstacle.style.left = obstacle.getBoundingClientRect().left - 10 + 'px';
+
+                    if (obstacle.getBoundingClientRect().left < dino.getBoundingClientRect().right) {
+                        if (dino.getBoundingClientRect().bottom >= obstacle.getBoundingClientRect().bottom) {
+                            alert('Game Over! Your Score: ' + score);
+                            location.reload();
+                        }
+                    }
+                }
+            }, 20);
+        }
+
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                dino.style.bottom = '100px';
+                setTimeout(() => {
+                    dino.style.bottom = '0px';
+                    isJumping = false;
+                }, 500);
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === ' ') {
+                jump();
+            }
+        });
+
+        setInterval(() => {
+            createObstacle();
+            score++;
+            scoreDisplay.innerText = score;
+        }, 1500);
+    </script>
+</body>
+</html>
